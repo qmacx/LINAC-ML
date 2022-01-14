@@ -86,7 +86,6 @@ if __name__ == '__main__':
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
             os.system("elegant XFELTransportLineRun.ele")
             os.system("python elegant2hdf5.py")
-            os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
             
             coupled_vals['betax_in'].append(beta_x[i]) # stores pairs of beta values
             coupled_vals['betay_in'].append(beta_y[j])
