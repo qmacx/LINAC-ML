@@ -1,0 +1,69 @@
+&run_setup
+        lattice = XFELTransportLineFinal.lte,
+        default_order = 1,
+        ! Use the beamline with WATCH points to get more data
+        use_beamline = COMPLET_TRANSFER_LINE_WATCH, 
+        p_central_mev = 6653.6,
+        sigma = %s.sig
+        centroid = %s.cen
+        output = %s.out
+        final = %s.fin
+        magnets=%s.magn
+&end
+
+
+&run_control
+        n_steps = 1
+&end
+
+
+&twiss_output  
+	filename = %s.twi
+	matched = 0;   
+	output_at_each_step = 0;   
+	output_before_tune_correction = 0;   
+	final_values_only = 1;   
+	statistics = 0;   
+	radiation_integrals = 0;   
+	beta_x = 1e-3 
+	alpha_x = 0;   
+	eta_x = 0;   
+	etap_x = 0;   
+	beta_y = 1e-2
+	alpha_y = 0;   
+	eta_y = 0;   
+	etap_y = 0;   
+	reference_element_occurrence = 0;   
+	reflect_reference_values = 0;   
+	cavities_are_drifts_if_matched = 1;   
+&end 
+
+
+
+
+&slice_analysis  
+	output = %s.slan  
+	n_slices = 250 
+	s_start = 0  
+	s_end = 12 
+	final_values_only = 0  
+&end 
+
+&bunched_beam
+	n_particles_per_bunch = 20000
+	Po=6653
+	bunch=bunch_out.bun
+	beta_x = 1e-3 
+	beta_y = 1e-2 
+	alpha_x = 0.
+	alpha_y = 0.
+	emit_nx=4.0e-08 
+	emit_ny=4.0e-08   
+	sigma_s =0.5e-06
+    sigma_dp = 5.0e-04 
+    !use_twiss_command_values = 1,
+    enforce_rms_values[0] = 3*1
+    distribution_type[0] = 3*gaussian
+    distribution_cutoff[0] = 3*3
+&end
+&track &end
