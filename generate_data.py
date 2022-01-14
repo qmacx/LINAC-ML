@@ -12,8 +12,8 @@ nominaly = 4.5713
 
 coupled_vals = {'betax_in': [], 'betay_in': []}
 
-beta_x = np.linspace(nominalx*0.1, nominalx*1.2, 200)
-beta_y = np.linspace(nominaly*0.1 ,nominalx*1.2, 200)
+beta_x = np.linspace(nominalx*0.1, nominalx*1.2, 2)
+beta_y = np.linspace(nominaly*0.1 ,nominalx*1.2, 2)
 x, y = np.meshgrid(beta_x, beta_y)
 
 base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
@@ -77,10 +77,10 @@ else:
 
 if __name__ == '__main__':
     for i in range(len(x)):
+        stringx = "s/beta_x = .*/beta_x = %s/"%(beta_x[i])
         for j in range(len(y)):
             makedir('./data')
-            stringx = "s/beta_x = .*/beta_x = %s/"%(x[i][j])
-            stringy = "s/beta_y = .*/beta_y = %s/"%(y[i][j])
+            stringy = "s/beta_y = .*/beta_y = %s/"%(beta_y[j])
             
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringx))
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
@@ -88,8 +88,8 @@ if __name__ == '__main__':
             os.system("python elegant2hdf5.py")
             os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
             
-            coupled_vals['betax_in'].append(x[i][j]) # stores pairs of beta values
-            coupled_vals['betay_in'].append(y[i][j])
+            coupled_vals['betax_in'].append(beta_x[i]) # stores pairs of beta values
+            coupled_vals['betay_in'].append(beta_y[j])
             
             clean_data(base, counter) # creates output files for twiss params
             counter += 1
