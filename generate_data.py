@@ -4,20 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-now = datetime.now()
-date = str(now.strftime("%d-%m-%Y-%H:%M"))
-
-nominalx = 5.7598
-nominaly = 4.5713
-
-coupled_vals = {'betax_in': [], 'betay_in': []}
-
-beta_x = np.linspace(nominalx*0.1, nominalx*1.2, 2)
-beta_y = np.linspace(nominaly*0.1 ,nominalx*1.2, 2)
-x, y = np.meshgrid(beta_x, beta_y)
-
-base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
-paths = glob.glob('./data/dataframe*.csv')
 
 
 def clean_data(path, n):
@@ -67,32 +53,69 @@ def makedir(path):
 
 
 
-# checks if there is already data in the directory and avoids overwriting
-if len(paths) > 0:
-    counter = len(paths) 
-else:
-    counter = 0
-
-
-
-if __name__ == '__main__':
-    for i in range(len(x)):
-        stringx = "s/beta_x = .*/beta_x = %s/"%(beta_x[i])
-        for j in range(len(y)):
-            makedir('./data')
-            stringy = "s/beta_y = .*/beta_y = %s/"%(beta_y[j])
-            
-            os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringx))
+def beta_scan(betax, betay):
+    """
+    Scans beta twiss values
+    """
+    coupled_vals = {'betax_in': [], 'betay_in': []}
+    
+    for x in betax:
+        stringx = "s/beta_x = .*/beta_x = %s/"%(betax)
+        os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringx))
+        for y in betay:
+            stringy = "s/beta_y = .*/beta_y = %s/"%(betay)
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
+            
             os.system("elegant XFELTransportLineRun.ele")
             os.system("python elegant2hdf5.py")
             os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
-            
-            coupled_vals['betax_in'].append(beta_x[i]) # stores pairs of beta values
-            coupled_vals['betay_in'].append(beta_y[j])
-            
-            clean_data(base, counter) # creates output files for twiss params
+
+            coupled_vals['betax_in'].append(x) # stores pairs of beta values
+            coupled_vals['betay_in'].append(y)
+           
+            clean_data(base, counter)  # creates output dataframe
             counter += 1
 
-    pd.DataFrame.from_dict(coupled_vals).to_csv('./data/betavals-{}.csv'.format(date)) # creates a csv containing parameter pairs per df which are later matched up with singular output values
+    pd.DataFrame.from_dict(coupled_vals).to_csv('./data/betavals-{}.csv'.format(date)) 
 
+
+
+
+
+def chicane_scan(betax, betay, p1, p2, p3, p4, counter): 
+    """
+    Scans the pitch values for the chicane
+    """
+    base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
+    c = counter
+    chicane_vals = {'betax_in': [], 'betay_in': [], 'pitchb1': [], 'pitchb2': [], 'pitchb3': [], 'pitchb4': []}
+    for pitchb1 in p1:
+        stringb1 = "s/B1: = .*/B1: PITCH=%s,/"%(pitchb1)
+        os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb1))
+        for pitchb2 in p1:
+            stringb2 = "s/B2: = .*/B2: PITCH=%s,/"%(pitchb2)
+            os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb2))
+            for pitchb3 in p3:
+                stringb3 = "s/B3: = .*/B3: PITCH=%s,/"%(pitchb3)
+                os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb3))
+                for pitchb4 in p4:
+                    stringb4 = "s/B4: = .*/B4: PITCH=%s,/"%(pitchb4)
+                    os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb4))
+                    
+                    os.system("elegant XFELTransportLineRun.ele")
+                    os.system("python elegant2hdf5.py")
+                    os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
+                   
+                    chicane_vals['betax_in'].append(betax) 
+                    chicane_vals['betay_in'].append(betay) 
+                    chicane_vals['pitchb1'].append(pitchb1) 
+                    chicane_vals['pitchb2'].append(pitchb2)
+                    chicane_vals['pitchb3'].append(pitchb3)
+                    chicane_vals['pitchb4'].append(pitchb4)
+                    
+                    clean_data(base, c) # creates output files for twiss params
+                    c += 1
+
+    chicane = pd.DataFrame.from_dict(chicane_vals)
+
+    return chicane
