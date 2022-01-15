@@ -1,7 +1,6 @@
 import numpy as np
 import os, sys, glob, h5py
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
 
 
@@ -28,10 +27,10 @@ def clean_data(path, n):
     rawdf = rawdf.drop(['ElementName', 'particles'], axis=1)
     rawdf['total_ecn'] = rawdf['ecnx'] + rawdf['ecny']
     
-    xp = np.array(pd.read_csv("./twiss_ascii/XP_XFELTransportLineRun.txt")).reshape(1000,)
-    x = np.array(pd.read_csv("./twiss_ascii/X_XFELTransportLineRun.txt")).reshape(1000,)
-    yp = np.array(pd.read_csv("./twiss_ascii/YP_XFELTransportLineRun.txt")).reshape(1000,)
-    y = np.array(pd.read_csv("./twiss_ascii/Y_XFELTransportLineRun.txt")).reshape(1000,)
+    xp = np.array(pd.read_csv("./twiss_ascii/XP_XFELTransportLineRun.txt")).reshape(10,)
+    x = np.array(pd.read_csv("./twiss_ascii/X_XFELTransportLineRun.txt")).reshape(10,)
+    yp = np.array(pd.read_csv("./twiss_ascii/YP_XFELTransportLineRun.txt")).reshape(10,)
+    y = np.array(pd.read_csv("./twiss_ascii/Y_XFELTransportLineRun.txt")).reshape(10,)
     twiss = pd.read_csv("./twiss_ascii/twiss_parameter_slan_XFELTransportLineRun.txt", sep='\t', header=0)
     diverge = pd.read_csv("./twiss_ascii/diverg_sig_XFELTransportLineRun.txt", sep='\t', header=0)
     
@@ -80,8 +79,6 @@ def beta_scan(betax, betay):
 
 
 
-
-
 def chicane_scan(betax, betay, p1, p2, p3, p4, counter): 
     """
     Scans the pitch values for the chicane
@@ -117,5 +114,5 @@ def chicane_scan(betax, betay, p1, p2, p3, p4, counter):
                     c += 1
 
     chicane = pd.DataFrame.from_dict(chicane_vals)
-
+    
     return chicane
