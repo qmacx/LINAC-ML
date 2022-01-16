@@ -19,34 +19,23 @@ pitchb2 = np.linspace(1, 2, 2)
 pitchb3 = np.linspace(1, 2, 2)
 pitchb4 = np.linspace(1, 2, 2)
 
+# script to create dataframes from all available h5 files in directory
 
-def grid_scan(bx, by, pb1, pb2, pb3, pb4):
-   
-    """ 
-    Scans beta twiss values (first 2 layers of nested loop) + chosen section
-    """
+base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
+makedir(base)
+paths = glob.glob("./data/dataframe*.csv")
 
-    scannedvals = pd.DataFrame() # df to store all combinations of parameter scan
-    outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
-    labels = pd.DataFrame(columns=['betax', 'betay', 'pitch1', 'pitch2', 'pitch3', 'pitch4'])
+if __name__ == '__main__':
+    labels = grid_scan(beta_x, beta_y, pitchb1, pitchb2, pitchb3, pitchb4) # scans the parameters
+    divergence = []
+    for i in range(len(paths)):
+        dataset = pd.read_csv(paths[i]) 
+        diverge = data['Sxp'] + data['Syp'] 
+        divergence.append(np.array(diverge)[18]) 
     
-    # added this check so that running the script consecutively doesn't overwrite current paths
-    if len(outputs) > 0:
-        out_count = len(outputs)
-    else:
-        out_count = 0
-     
-    for x in bx:
-        stringx = "s/beta_x = .*/beta_x = %s/"%(x)
-        os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringx))
-        for y in by:
-            stringy = "s/beta_y = .*/beta_y = %s/"%(y)
-            os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
+    feature = pd.DataFrame(divergence, columns=['divergence']) # initiates empty dataframe which will hold feature (divergence)
+    training_data = pd.concat([labels, feature])
+    training_data.to_csv('completed_data.csv') # dataframe containing sets of input and output values
 
-            scannedvals = scannedvals.append(chicane_scan(x, y, pitchb1, pitchb2, pitchb3, pitchb4, out_count))
-            out_count += len(bx)**4 # necessary to not overwrite chicane outputs every time chicane_scan called 
-
-    scannedvals.to_csv('./data/scanned_values.csv', index=False)
     
 
-grid_scan(beta_x, beta_y, pitchb1, pitchb2, pitchb3, pitchb4)
