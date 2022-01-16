@@ -51,12 +51,11 @@ def makedir(path):
 
 
 
-def beta_scan(betax, betay):
+def beta_scan(betax, betay, path):
     """
     Scans beta twiss values
     """
 
-    base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     coupled_vals = {'betax_in': [], 'betay_in': []}
     
     for x in betax:
@@ -73,19 +72,18 @@ def beta_scan(betax, betay):
             coupled_vals['betax_in'].append(x) # stores pairs of beta values
             coupled_vals['betay_in'].append(y)
            
-            clean_data(base, counter)  # creates output dataframe
+            clean_data(path, counter)  # creates output dataframe
             counter += 1
 
     pd.DataFrame.from_dict(coupled_vals).to_csv('./data/betavals-{}.csv'.format(date)) 
 
 
 
-def chicane_scan(betax, betay, p1, p2, p3, p4, counter): 
+def chicane_scan(betax, betay, p1, p2, p3, p4, counter, path): 
     """
     Scans the pitch values for the chicane
     """
 
-    base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     chicane_vals = {'betax_in': [], 'betay_in': [], 'pitchb1': [], 'pitchb2': [], 'pitchb3': [], 'pitchb4': []}
 
     c = counter
@@ -113,7 +111,7 @@ def chicane_scan(betax, betay, p1, p2, p3, p4, counter):
                     chicane_vals['pitchb3'].append(pitchb3)
                     chicane_vals['pitchb4'].append(pitchb4)
                     
-                    clean_data(base, c) # creates output files for twiss params
+                    clean_data(path, c) # creates output files for twiss params
                     c += 1
 
     chicane = pd.DataFrame.from_dict(chicane_vals)
@@ -128,7 +126,8 @@ def grid_scan(bx, by, pb1, pb2, pb3, pb4):
     """ 
     Scans beta twiss values (first 2 layers of nested loop) + chosen section
     """
-
+    
+    path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     scannedvals = pd.DataFrame() # df to store all combinations of parameter scan
     outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
     labels = pd.DataFrame(columns=['betax', 'betay', 'pitch1', 'pitch2', 'pitch3', 'pitch4'])
@@ -146,7 +145,7 @@ def grid_scan(bx, by, pb1, pb2, pb3, pb4):
             stringy = "s/beta_y = .*/beta_y = %s/"%(y)
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
 
-            scannedvals = scannedvals.append(chicane_scan(x, y, pb1, pb2, pb3, pb4, out_count))
+            scannedvals = scannedvals.append(chicane_scan(x, y, pb1, pb2, pb3, pb4, out_count, path))
             out_count += len(bx)**4 # necessary to not overwrite chicane outputs every time chicane_scan called 
 
     scannedvals.to_csv('./data/scanned_values.csv', index=False)

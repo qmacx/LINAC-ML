@@ -21,8 +21,6 @@ pitchb4 = np.linspace(1, 2, 2)
 
 # script to create dataframes from all available h5 files in directory
 
-base = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
-makedir(base)
 paths = glob.glob("./data/dataframe*.csv")
 
 if __name__ == '__main__':
@@ -30,12 +28,9 @@ if __name__ == '__main__':
     divergence = []
     for i in range(len(paths)):
         dataset = pd.read_csv(paths[i]) 
-        diverge = data['Sxp'] + data['Syp'] 
-        divergence.append(np.array(diverge)[18]) 
+        diverge = dataset['Sxp'] + dataset['Syp'] 
+        divergence.append(np.array(diverge)[22]) 
     
     feature = pd.DataFrame(divergence, columns=['divergence']) # initiates empty dataframe which will hold feature (divergence)
     training_data = pd.concat([labels, feature])
-    training_data.to_csv('completed_data.csv') # dataframe containing sets of input and output values
-
-    
-
+    training_data.to_csv('./data/completed_data.csv') # dataframe containing sets of input and output values
