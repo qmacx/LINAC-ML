@@ -29,8 +29,7 @@ angleb4 = np.linspace(nab4*0.9999, nab4*1.0001, 2)
 
 
 if __name__ == '__main__':
-    #training_data = grid_scan(beta_x, beta_y, angleb1, angleb2) 
-    labels = pd.read_csv('./data/scanned_values.csv') 
+    labels = grid_scan(beta_x, beta_y, angleb1, angleb2) 
     paths = glob.glob("./data/dataframe*.csv")
     divergence = []
     emittence = []
