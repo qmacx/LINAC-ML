@@ -26,10 +26,10 @@ def clean_data(path, n):
     rawdf = rawdf.drop(['ElementName', 'particles'], axis=1)
     rawdf['total_ecn'] = rawdf['ecnx'] + rawdf['ecny']
     
-    xp = np.array(pd.read_csv("./twiss_ascii/XP_XFELTransportLineRun.txt")).reshape(10,)
-    x = np.array(pd.read_csv("./twiss_ascii/X_XFELTransportLineRun.txt")).reshape(10,)
-    yp = np.array(pd.read_csv("./twiss_ascii/YP_XFELTransportLineRun.txt")).reshape(10,)
-    y = np.array(pd.read_csv("./twiss_ascii/Y_XFELTransportLineRun.txt")).reshape(10,)
+    xp = np.array(pd.read_csv("./twiss_ascii/XP_XFELTransportLineRun.txt")).reshape(1000,)
+    x = np.array(pd.read_csv("./twiss_ascii/X_XFELTransportLineRun.txt")).reshape(1000,)
+    yp = np.array(pd.read_csv("./twiss_ascii/YP_XFELTransportLineRun.txt")).reshape(1000,)
+    y = np.array(pd.read_csv("./twiss_ascii/Y_XFELTransportLineRun.txt")).reshape(1000,)
     twiss = pd.read_csv("./twiss_ascii/twiss_parameter_slan_XFELTransportLineRun.txt", sep='\t', header=0)
     diverge = pd.read_csv("./twiss_ascii/diverg_sig_XFELTransportLineRun.txt", sep='\t', header=0)
     
