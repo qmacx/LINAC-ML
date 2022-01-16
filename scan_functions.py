@@ -79,40 +79,38 @@ def beta_scan(betax, betay, path):
 
 
 
-def chicane_scan(betax, betay, p1, p2, p3, p4, counter, path): 
+def chicane_scan(betax, betay, a1a4, a2a3, counter, path): 
     """
-    Scans the pitch values for the chicane
+    Scans the angle values for the chicane
     """
 
-    chicane_vals = {'betax_in': [], 'betay_in': [], 'pitchb1': [], 'pitchb2': [], 'pitchb3': [], 'pitchb4': []}
+    chicane_vals = {'betax_in': [], 'betay_in': [], 'angleb1': [], 'angleb2': [], 'angleb3': [], 'angleb4': []}
 
     c = counter
-    for pitchb1 in p1:
-        stringb1 = "s/B1: = .*/B1: PITCH=%s,/"%(pitchb1)
-        os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb1))
-        for pitchb2 in p1:
-            stringb2 = "s/B2: = .*/B2: PITCH=%s,/"%(pitchb2)
-            os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb2))
-            for pitchb3 in p3:
-                stringb3 = "s/B3: = .*/B3: PITCH=%s,/"%(pitchb3)
-                os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb3))
-                for pitchb4 in p4:
-                    stringb4 = "s/B4: = .*/B4: PITCH=%s,/"%(pitchb4)
-                    os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringb4))
-                    
-                    os.system("elegant XFELTransportLineRun.ele")
-                    os.system("python elegant2hdf5.py")
-                    os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
-                   
-                    chicane_vals['betax_in'].append(betax) 
-                    chicane_vals['betay_in'].append(betay) 
-                    chicane_vals['pitchb1'].append(pitchb1) 
-                    chicane_vals['pitchb2'].append(pitchb2)
-                    chicane_vals['pitchb3'].append(pitchb3)
-                    chicane_vals['pitchb4'].append(pitchb4)
-                    
-                    clean_data(path, c) # creates output files for twiss params
-                    c += 1
+    for angle1 in a1a4:
+        stringa1 = "s/B1: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B1: CSRCSBEND,L=0.4,ANGLE=%s,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
+        stringa4 = "s/B4: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B2: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
+        os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa1))
+        os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa4))
+        for angle2 in a2a3:
+            stringa2 = "s/B2: CSRCSBEND,L=0.4,ANGLE=.*,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B2: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle2)
+            stringa3 = "s/B3: CSRCSBEND,L=0.4,ANGLE=.*,E2=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B3: CSRCSBEND,L=0.4,ANGLE=%s,E2=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle2)
+            os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa1))
+            os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa4))
+            
+            os.system("elegant XFELTransportLineRun.ele")
+            os.system("python elegant2hdf5.py")
+            os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
+           
+            chicane_vals['betax_in'].append(betax) 
+            chicane_vals['betay_in'].append(betay) 
+            chicane_vals['angleb1'].append(angle1) 
+            chicane_vals['angleb2'].append(angle2)
+            chicane_vals['angleb3'].append(angle2)
+            chicane_vals['angleb4'].append(angle1)
+            
+            clean_data(path, c) # creates output files for twiss params
+            c += 1
 
     chicane = pd.DataFrame.from_dict(chicane_vals)
     
@@ -121,7 +119,7 @@ def chicane_scan(betax, betay, p1, p2, p3, p4, counter, path):
 
 
 
-def grid_scan(bx, by, pb1, pb2, pb3, pb4):
+def grid_scan(bx, by, ab1, ab2):
    
     """ 
     Scans beta twiss values (first 2 layers of nested loop) + chosen section
@@ -130,7 +128,7 @@ def grid_scan(bx, by, pb1, pb2, pb3, pb4):
     path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     scannedvals = pd.DataFrame() # df to store all combinations of parameter scan
     outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
-    labels = pd.DataFrame(columns=['betax', 'betay', 'pitch1', 'pitch2', 'pitch3', 'pitch4'])
+    labels = pd.DataFrame(columns=['betax', 'betay', 'angle1', 'pitch2', 'pitch3', 'pitch4'])
 
     # added this check so that running the script consecutively doesn't overwrite current paths
     if len(outputs) > 0:
@@ -145,7 +143,7 @@ def grid_scan(bx, by, pb1, pb2, pb3, pb4):
             stringy = "s/beta_y = .*/beta_y = %s/"%(y)
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
 
-            scannedvals = scannedvals.append(chicane_scan(x, y, pb1, pb2, pb3, pb4, out_count, path))
+            scannedvals = scannedvals.append(chicane_scan(x, y, ab1, ab2, out_count, path))
             out_count += len(bx)**4 # necessary to not overwrite chicane outputs every time chicane_scan called 
 
     scannedvals.to_csv('./data/scanned_values.csv', index=False)
