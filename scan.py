@@ -14,8 +14,8 @@ nab3 = -0.001
 nab4 = 0.001
 
 # must be equal length arrays
-beta_x = np.linspace(nbetax*0.99, nbetax*1.01, 2)
-beta_y = np.linspace(nbetay*0.99, nbetay*1.01, 2)
+beta_x = np.linspace(nbetax*0.9, nbetax*1.1, 2)
+beta_y = np.linspace(nbetay*0.9, nbetay*1.1, 2)
 angleb1 = np.linspace(nab1*0.995, nab1*1.005, 2) # varied by 0.5% each since b1=b4 and b2=b3 => 1% overall variation
 angleb2 = np.linspace(nab2*0.995, nab2*1.005, 2)
 angleb3 = np.linspace(nab3*0.995, nab3*1.005, 2)

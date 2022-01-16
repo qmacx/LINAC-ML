@@ -89,7 +89,7 @@ def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
     c = counter
     for angle1 in a1a4:
         stringa1 = "s/B1: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B1: CSRCSBEND,L=0.4,ANGLE=%s,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
-        stringa4 = "s/B4: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B2: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
+        stringa4 = "s/B4: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B4: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
         os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa1))
         os.system("sed -i '%s' XFELTransportLineFinal.lte"%(stringa4))
         for angle2 in a2a3:
