@@ -29,15 +29,29 @@ angleb4 = np.linspace(nab4*0.9999, nab4*1.0001, 2)
 
 
 if __name__ == '__main__':
-    training_data = grid_scan(beta_x, beta_y, angleb1, angleb2) 
+    #training_data = grid_scan(beta_x, beta_y, angleb1, angleb2) 
+    labels = pd.read_csv('./data/scanned_values.csv') 
     paths = glob.glob("./data/dataframe*.csv")
     divergence = []
+    emittence = []
+    centroid = []
     for i in range(len(paths)):
         dataset = pd.read_csv(paths[i])
         diverge = dataset['Sxp'] + dataset['Syp']
+        ex = dataset['enx'] - 4.0e-8
+        ey = dataset['eny'] - 4.0e-8
+        emit = np.sqrt(ex**2 + ey**2)
+
+        cx = dataset['Cx']
+        cy = dataset['Cy']
+        cent = np.sqrt(cx**2 + cy**2)
+        
         divergence.append(np.array(diverge)[22]) 
-    
-    training_data['divergence'] = divergence
+        emittence.append(np.array(emit)[2418])
+        centroid.append(np.array(cent)[2418])
+   
+    features = pd.DataFrame(np.column_stack([divergence, emittence, centroid]), columns=['divergence', 'emittence', 'centroid'])
+    training_data = pd.concat([labels, features], axis=1)
     training_data.to_csv('./data/completed_data.csv') # dataframe containing sets of input and output values
 
 
