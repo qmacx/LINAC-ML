@@ -144,7 +144,7 @@ def grid_scan(bx, by, ab1, ab2):
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
 
             scannedvals = scannedvals.append(chicane_scan(x, y, ab1, ab2, out_count, path))
-            out_count += len(bx)**4 # necessary to not overwrite chicane outputs every time chicane_scan called 
+            out_count += len(bx)**2 # necessary to not overwrite chicane outputs every time chicane_scan called 
 
     scannedvals.to_csv('./data/scanned_values.csv', index=False)
 
