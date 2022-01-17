@@ -16,10 +16,10 @@ nab4 = 0.001
 # must be equal length arrays
 beta_x = np.linspace(nbetax*0.9, nbetax*1.1, 2)
 beta_y = np.linspace(nbetay*0.9, nbetay*1.1, 2)
-angleb1 = np.linspace(nab1*0.995, nab1*1.005, 2) # varied by 0.5% each since b1=b4 and b2=b3 => 1% overall variation
-angleb2 = np.linspace(nab2*0.995, nab2*1.005, 2)
-angleb3 = np.linspace(nab3*0.995, nab3*1.005, 2)
-angleb4 = np.linspace(nab4*0.995, nab4*1.005, 2)
+angleb1 = np.linspace(nab1*0.9, nab1*1.1, 2) # varied by 0.5% each since b1=b4 and b2=b3 => 1% overall variation
+angleb2 = np.linspace(nab2*0.9, nab2*1.1, 2)
+angleb3 = np.linspace(nab3*0.9, nab3*1.1, 2)
+angleb4 = np.linspace(nab4*0.9, nab4*1.1, 2)
 
 if __name__ == '__main__':
     labels = grid_scan(beta_x, beta_y, angleb1, angleb2) # can be changed to beta_scan, chicane_scan
