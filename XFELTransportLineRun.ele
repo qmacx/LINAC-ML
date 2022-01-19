@@ -17,26 +17,6 @@
 &end
 
 
-&twiss_output  
-	filename = %s.twi
-	matched = 0;   
-	output_at_each_step = 0;   
-	output_before_tune_correction = 0;   
-	final_values_only = 1;   
-	statistics = 0;   
-	radiation_integrals = 0;   
-	beta_x = 6.335780000000001
-	alpha_x = 0;   
-	eta_x = 0;   
-	etap_x = 0;   
-	beta_y = 5.02843
-	alpha_y = 0;   
-	eta_y = 0;   
-	etap_y = 0;   
-	reference_element_occurrence = 0;   
-	reflect_reference_values = 0;   
-	cavities_are_drifts_if_matched = 1;   
-&end 
 
 
 
@@ -53,13 +33,8 @@
 	n_particles_per_bunch = 1000
 	Po=6653
 	bunch=bunch_out.bun
-<<<<<<< HEAD
-	beta_x = 5.702202
-	beta_y = 4.525587
-=======
-	beta_x = 6.335780000000001
-	beta_y = 5.02843
->>>>>>> b041c949cf499de13edf63c7af0c851a5658a2ce
+	beta_x = 5.183820000000001
+	beta_y = 4.11417
 	alpha_x = 0.
 	alpha_y = 0.
 	emit_nx=4.0e-08 
