@@ -18,18 +18,16 @@ nab4 = 0.001
 
 
 # must be equal length arrays
-beta_x = np.linspace(nbetax*0.99, nbetax*1.01, 2)
-beta_y = np.linspace(nbetay*0.99, nbetay*1.01, 2)
-angleb1 = np.linspace(nab1*0.9999, nab1*1.0001, 2)
-angleb2 = np.linspace(nab2*0.9999, nab2*1.0001, 2)
-angleb3 = np.linspace(nab3*0.9999, nab3*1.0001, 2)
-angleb4 = np.linspace(nab4*0.9999, nab4*1.0001, 2)
+beta_x = np.linspace(nbetax*0.99, nbetax*1.01, 4)
+beta_y = np.linspace(nbetay*0.99, nbetay*1.01, 4)
+angleb1 = np.linspace(nab1*0.95, nab1*1.05, 100)
+angleb2 = np.linspace(nab2*0.95, nab2*1.05, 100)
 
 # script to create dataframes from all available h5 files in directory
 
 
 if __name__ == '__main__':
-    labels = grid_scan(beta_x, beta_y, angleb1, angleb2) 
+    labels = chicane_scan(nbetax, nbetay, angleb1, angleb2) 
     paths = glob.glob("./data/dataframe*.csv")
     divergence = []
     emittence = []
