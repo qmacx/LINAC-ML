@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 def clean_data(path, n):
-    """ 
+    """
     Returns dataframes containing only the relevant parameters using available paths in project directory
     """
     file = h5py.File(path)['page1']['columns']
@@ -34,7 +34,7 @@ def clean_data(path, n):
     diverge = pd.read_csv("./twiss_ascii/diverg_sig_XFELTransportLineRun.txt", sep='\t', header=0)
     
     phase = pd.DataFrame(np.array([x, xp, y, yp]), index=['x', 'xp', 'y', 'yp']).T
-    frames = [rawdf, rawdfavg, phase, twiss, diverge] 
+    frames = [rawdf, rawdfavg, phase, twiss, diverge]
     df = pd.concat(frames, axis=1)
     df.to_csv('./data/dataframe{}.csv'.format(n))
 
@@ -51,11 +51,42 @@ def makedir(path):
 
 
 
+def single_scan(x):
+    """
+    Scans a parameter of choice
+    """
+    path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
+    outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
+    
+    if len(outputs) > 0:
+        counter = len(outputs)
+    else:
+        counter = 0
+
+    for angle in x:
+        string1 = "s/B1: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B1: CSRCSBEND,L=0.4,ANGLE=%s,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle)
+        string2 = "s/B4: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B4: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle)
+
+        os.system("sed -i '%s' XFELTransportLineRun.ele"%(string1))
+        os.system("sed -i '%s' XFELTransportLineRun.ele"%(string2))
+        
+        os.system("elegant XFELTransportLineRun.ele")
+        os.system("python elegant2hdf5.py")
+        os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
+
+        clean_data(path, counter)  # creates output dataframe
+        counter += 1 # necessary to not overwrite chicane outputs every time chicane_scan called 
+
+
+
+
+
 def beta_scan(betax, betay, path):
     """
     Scans beta twiss values
     """
 
+    path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     coupled_vals = {'betax_in': [], 'betay_in': []}
     
     for x in betax:
@@ -75,15 +106,16 @@ def beta_scan(betax, betay, path):
             clean_data(path, counter)  # creates output dataframe
             counter += 1
 
-    pd.DataFrame.from_dict(coupled_vals).to_csv('./data/betavals-{}.csv'.format(date)) 
+    pd.DataFrame.from_dict(coupled_vals).to_csv('./data/betavals-{}.csv'.format(date))
 
 
 
-def chicane_scan(betax, betay, a1a4, a2a3, counter, path): 
+def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
     """
     Scans the angle values for the chicane
     """
 
+    path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     chicane_vals = {'betax_in': [], 'betay_in': [], 'angleb1': [], 'angleb2': [], 'angleb3': [], 'angleb4': []}
 
     c = counter
@@ -102,9 +134,9 @@ def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
             os.system("python elegant2hdf5.py")
             os.system("./plot_twissV9.sh XFELTransportLineRun.slan XFELTransportLineRun.magn")
            
-            chicane_vals['betax_in'].append(betax) 
-            chicane_vals['betay_in'].append(betay) 
-            chicane_vals['angleb1'].append(angle1) 
+            chicane_vals['betax_in'].append(betax)
+            chicane_vals['betay_in'].append(betay)
+            chicane_vals['angleb1'].append(angle1)
             chicane_vals['angleb2'].append(angle2)
             chicane_vals['angleb3'].append(angle2)
             chicane_vals['angleb4'].append(angle1)
@@ -120,8 +152,7 @@ def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
 
 
 def grid_scan(bx, by, ab1, ab2):
-   
-    """ 
+    """
     Scans beta twiss values (first 2 layers of nested loop) + chosen section
     """
     
@@ -134,12 +165,12 @@ def grid_scan(bx, by, ab1, ab2):
     if len(outputs) > 0:
         out_count = len(outputs)
     else:
-        out_count = 0 
+        out_count = 0
          
-    for x in bx: 
+    for x in bx:
         stringx = "s/beta_x = .*/beta_x = %s/"%(x)
         os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringx))
-        for y in by: 
+        for y in by:
             stringy = "s/beta_y = .*/beta_y = %s/"%(y)
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
 
