@@ -53,8 +53,13 @@
 	n_particles_per_bunch = 1000
 	Po=6653
 	bunch=bunch_out.bun
+<<<<<<< HEAD
+	beta_x = 5.702202
+	beta_y = 4.525587
+=======
 	beta_x = 6.335780000000001
 	beta_y = 5.02843
+>>>>>>> b041c949cf499de13edf63c7af0c851a5658a2ce
 	alpha_x = 0.
 	alpha_y = 0.
 	emit_nx=4.0e-08 

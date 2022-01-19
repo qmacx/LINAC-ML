@@ -86,7 +86,14 @@ def beta_scan(betax, betay, path):
     Scans beta twiss values
     """
 
+    outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
     path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
+    
+    if len(outputs) > 0:
+        counter = len(outputs)
+    else:
+        counter = 0 
+    
     coupled_vals = {'betax_in': [], 'betay_in': []}
     
     for x in betax:
@@ -110,15 +117,21 @@ def beta_scan(betax, betay, path):
 
 
 
-def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
+def chicane_scan(betax, betay, a1a4, a2a3): 
     """
     Scans the angle values for the chicane
     """
-
+    
+    outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
     path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
+    
+    if len(outputs) > 0:
+        counter = len(outputs)
+    else:
+        counter = 0 
+    
     chicane_vals = {'betax_in': [], 'betay_in': [], 'angleb1': [], 'angleb2': [], 'angleb3': [], 'angleb4': []}
 
-    c = counter
     for angle1 in a1a4:
         stringa1 = "s/B1: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B1: CSRCSBEND,L=0.4,ANGLE=%s,E1=0.001,E2=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
         stringa4 = "s/B4: CSRCSBEND,L=0.4,ANGLE=.*,E1=0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/B4: CSRCSBEND,L=0.4,ANGLE=%s,E1=-0.001,N_SLICES=50,BINS=500,SG_HALFWIDTH=1/"%(angle1)
@@ -141,8 +154,8 @@ def chicane_scan(betax, betay, a1a4, a2a3, counter, path):
             chicane_vals['angleb3'].append(angle2)
             chicane_vals['angleb4'].append(angle1)
             
-            clean_data(path, c) # creates output files for twiss params
-            c += 1
+            clean_data(path, counter) # creates output files for twiss params
+            counter += 1
 
     chicane = pd.DataFrame.from_dict(chicane_vals)
     
@@ -156,7 +169,6 @@ def grid_scan(bx, by, ab1, ab2):
     Scans beta twiss values (first 2 layers of nested loop) + chosen section
     """
     
-    path = './data/XFELTransportLineRun_hdf5/XFELTransportLineRun_slan.h5'
     scannedvals = pd.DataFrame() # df to store all combinations of parameter scan
     outputs = glob.glob('./data/dataframe*.csv') # all dataframe paths containing output values
     labels = pd.DataFrame(columns=['betax', 'betay', 'angle1', 'pitch2', 'pitch3', 'pitch4'])
@@ -174,7 +186,7 @@ def grid_scan(bx, by, ab1, ab2):
             stringy = "s/beta_y = .*/beta_y = %s/"%(y)
             os.system("sed -i '%s' XFELTransportLineRun.ele"%(stringy))
 
-            scannedvals = scannedvals.append(chicane_scan(x, y, ab1, ab2, out_count, path))
+            scannedvals = scannedvals.append(chicane_scan(x, y, ab1, ab2)) # change input section ere
             out_count += len(bx)**2 # necessary to not overwrite chicane outputs every time chicane_scan called 
 
     scannedvals.to_csv('./data/scanned_values.csv', index=False)
