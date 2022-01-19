@@ -25,11 +25,11 @@
 	final_values_only = 1;   
 	statistics = 0;   
 	radiation_integrals = 0;   
-	beta_x = 1.0
+	beta_x = 5.702202
 	alpha_x = 0;   
 	eta_x = 0;   
 	etap_x = 0;   
-	beta_y = 1.0
+	beta_y = 4.525587
 	alpha_y = 0;   
 	eta_y = 0;   
 	etap_y = 0;   
@@ -53,8 +53,8 @@
 	n_particles_per_bunch = 10
 	Po=6653
 	bunch=bunch_out.bun
-	beta_x = 1.0
-	beta_y = 1.0
+	beta_x = 5.702202
+	beta_y = 4.525587
 	alpha_x = 0.
 	alpha_y = 0.
 	emit_nx=4.0e-08 
