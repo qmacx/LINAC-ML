@@ -22,9 +22,9 @@ angleb3 = np.linspace(nab3*0.9, nab3*1.1, 2)
 angleb4 = np.linspace(nab4*0.9, nab4*1.1, 2)
 
 if __name__ == '__main__':
-    labels = grid_scan(beta_x, beta_y, angleb1, angleb2) # can be changed to beta_scan, chicane_scan
+    #labels = grid_scan(beta_x, beta_y, angleb1, angleb2) # can be changed to beta_scan, chicane_scan
     #labels = pd.read_csv('./data/scanned_values.csv')
-    #single_scan(angleb1)
+    single_scan(angleb1)
     paths = glob.glob("./data/dataframe*.csv")
     divergence = []
     emittence = []
@@ -45,8 +45,8 @@ if __name__ == '__main__':
         centroid.append(np.sqrt(cx**2 + cy**2))
         
     features = pd.DataFrame(np.column_stack([divergence, emittence, centroid]), columns=['divergence', 'emittence', 'centroid'])
-    #features['angleb1'] = angleb1
-    training_data = pd.concat([labels.reset_index(drop=True), features.reset_index(drop=True)], axis=1)
-    training_data.to_csv('./data/completed_data.csv') # dataframe containing sets of input and output values
+    features['angleb1'] = angleb1
+    #training_data = pd.concat([labels.reset_index(drop=True), features.reset_index(drop=True)], axis=1)
+    features.to_csv('./data/completed_data.csv') # dataframe containing sets of input and output values
 
 
