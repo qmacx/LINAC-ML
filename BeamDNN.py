@@ -20,9 +20,12 @@ data = pd.read_csv('PITCHfirst3Quads10000.csv')
 data.columns=['Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 df = data.copy()
 
+# EDA
+
+# Machine Learning
 features = df.drop(['Quad', 'Angle'], axis=1)
 target = pd.get_dummies(df['Quad']) 
-
+print(target)
 features_train, features_test, target_train, target_test = train_test_split(features, target, test_size=0.2, random_state = 50)
 
 # model building
@@ -37,7 +40,7 @@ opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 dnn.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 # training
-history = dnn.fit(features_train, target_train, batch_size=32, epochs=150, validation_split=0.2)
+history = dnn.fit(features_train, target_train, batch_size=32, epochs=140, validation_split=0.2)
 
 # plots
 plot_model(dnn, to_file='dnn_plot.png', show_shapes=True, show_layer_names=True)
@@ -61,8 +64,14 @@ plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
 
-print('target', target_test, target_test.shape)
-predictions = pd.get_dummies(np.argmax(dnn.predict(features_test), axis=1))
-print('target', target_test, target_test.shape)
-print('predictions', predictions, predictions.shape)
-print(accuracy_score(target_test, predictions))
+mapping = {'No_PITCH': 0, 'QM1': 1, 'QM2': 2, 'QM3': 3}
+target_test = target_test.idxmax(axis=1) 
+target_test = [mapping[i] for i in target_test] # replaces strings with mapped value
+predictions = np.argmax(dnn.predict(features_test), axis=1)
+print('prediction accuracy: ', accuracy_score(target_test, predictions))
+
+# confusion matrix
+cm = confusion_matrix(target_test, predictions)
+ax = sns.heatmap(cm, annot=True)
+ax.set(title='Confusion Matrix for Multiclass DNN prediction', xlabel='Predicted Value', ylabel='True Value')
+plt.show()
