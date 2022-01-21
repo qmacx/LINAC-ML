@@ -13,12 +13,11 @@ import tensorflow as tf
 from keras.utils.vis_utils import plot_model
 
 
-
 # Take the evolution of centroid and assign a label to that 
 # labels should be quadrupole element number
 
-data = pd.read_csv('PITCH first 3 Quads.csv')
-data.columns=['Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4']
+data = pd.read_csv('PITCHfirst3Quads10000.csv')
+data.columns=['Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 df = data.copy()
 
 features = df.drop(['Quad', 'Angle'], axis=1)
@@ -28,10 +27,10 @@ features_train, features_test, target_train, target_test = train_test_split(feat
 
 # model building
 dnn = tf.keras.models.Sequential()
-dnn.add(tf.keras.layers.Dense(units=32, kernel_initializer=initializers.Ones(), activation='relu', input_dim=8))
+dnn.add(tf.keras.layers.Dense(units=32, kernel_initializer=initializers.Ones(), activation='relu', input_dim=14))
 dnn.add(tf.keras.layers.Dense(units=16, kernel_initializer='uniform', activation='relu'))
 dnn.add(tf.keras.layers.Dense(units=8, kernel_initializer='uniform', activation='relu'))
-dnn.add(tf.keras.layers.Dense(units=3, kernel_initializer='uniform', activation='softmax')) # softmax clfn
+dnn.add(tf.keras.layers.Dense(units=4, kernel_initializer='uniform', activation='softmax')) # softmax clfn
 
 # compiling
 opt = tf.keras.optimizers.Adam(learning_rate=0.001)
@@ -62,12 +61,8 @@ plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
 
-'''
-This section needs fixed, need to find out how to de-one hot encode target_test to compare it with predictions
 print('target', target_test, target_test.shape)
-target_test = np.argmax(target_test, axis=1)
-predictions = np.argmax(dnn.predict(features_test), axis=1)
+predictions = pd.get_dummies(np.argmax(dnn.predict(features_test), axis=1))
 print('target', target_test, target_test.shape)
 print('predictions', predictions, predictions.shape)
 print(accuracy_score(target_test, predictions))
-'''
