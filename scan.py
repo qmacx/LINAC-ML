@@ -5,6 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+# Parameter scanner for scanning relevant beamline parameter grids using Elegant
+
 # nominal values
 nbetax = 5.7598
 nbetay = 4.5713
