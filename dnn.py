@@ -10,6 +10,8 @@ from keras import callbacks
 from keras.utils.vis_utils import plot_model
 from keras import backend as K
 
+# Deep Neural Network for classification of misaligned, single components within a beamline
+
 
 data = pd.read_csv('DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0)
