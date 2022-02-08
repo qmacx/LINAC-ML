@@ -1,6 +1,0 @@
-betaxMax	 1.076075e+01
-betaxMin	 2.342809e-01
-betaxAve	 6.436638e+00
-betayMax	 4.710744e+01
-betayMin	 4.114170e+00
-betayAve	 1.224970e+01
