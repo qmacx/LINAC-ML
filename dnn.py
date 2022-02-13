@@ -30,6 +30,7 @@ df = pd.concat([dfx, dfy, nm], axis=0)
 # Feature selection and normalisation
 scaler = StandardScaler()
 features = df.drop(['Label', 'Quad', 'Angle'], axis=1)
+features = features.drop(['CxOTR2', 'CyOTR2', 'CxOTR4', 'CyOTR4', 'CxOTR6', 'CyOTR6'], axis=1)
 features = scaler.fit_transform(features)
 target = pd.get_dummies(df['Quad'])
 
@@ -38,8 +39,8 @@ features_train, features_test, target_train, target_test = train_test_split(feat
 
 # DNN model building
 dnn = tf.keras.models.Sequential()
-dnn.add(tf.keras.layers.Dense(units=10, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu', input_dim=14))
-dnn.add(tf.keras.layers.Dense(units=10, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu'))
+dnn.add(tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu', input_dim=8))
+dnn.add(tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu'))
 dnn.add(tf.keras.layers.Dense(units=7, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')) 
 
 # Compile, train, predict

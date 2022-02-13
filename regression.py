@@ -29,6 +29,7 @@ df = pd.concat([dfx, dfy, nm], axis=0)
 
 # Feature selection
 features = df.drop(['Label', 'Quad', 'Angle'], axis=1)
+features = features.drop(['CxOTR2','CyOTR2','CxOTR4','CyOTR4','CxOTR6','CyOTR6'], axis=1)
 quads = pd.get_dummies(df['Quad'])
 features = pd.concat([features, quads], axis=1)
 target = data['Angle']
@@ -43,7 +44,7 @@ features_train, features_test, target_train, target_test = train_test_split(feat
 
 # Linear Regression ANN
 model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(units=10, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu', input_dim=21))
+model.add(tf.keras.layers.Dense(units=10, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu', input_dim=15))
 model.add(tf.keras.layers.Dense(units=1, kernel_initializer='normal', activation='linear'))
 
 
@@ -79,9 +80,8 @@ plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
 
-fig, ax = plt.subplots(figsize=(4,3))
-ax.scatter(target_test, predict, c='k', s=1, marker='x')
-ax.set(xlabel='True Value', ylabel='Predicted Value')
-ax.plot(target_test, predict, '--')
+fig, ax = plt.subplots()
+ax.scatter(target_test[::20], predict[::20], c='k', s=0.5, marker='x')
+ax.set(xlabel='True Value [arb]', ylabel='Predicted Value [arb]', title='Linear Regression Prediction')
 plt.show()
-
+print(target_test, predict)
