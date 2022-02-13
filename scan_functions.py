@@ -3,6 +3,8 @@ import os, sys, glob, h5py
 import pandas as pd
 from datetime import datetime
 
+# Scanning functions used to scan parameter grids of beamline using Elegant
+
 
 def clean_data(path, n):
     """

@@ -3,6 +3,8 @@ import glob, os,sys, re
 from datetime import datetime,timedelta
 now = datetime.now()
 
+# converts Elegant output files to hdf5 for Python analysis
+
 TodayDate=str(now.strftime("%d-%m-%Y-%H:%M:%S:%f"))
 
 #dir is not keyword

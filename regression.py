@@ -10,6 +10,8 @@ from keras.utils.vis_utils import plot_model
 from keras import backend as K
 from keras import callbacks
 
+# Linear regression ANN using Keras for magnitude of misalignment prediction 
+
 
 data = pd.read_csv('DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0)
