@@ -14,7 +14,7 @@ import tensorflow as tf
 from keras.utils.vis_utils import plot_model
 from keras import layers
 
-# DNN for classification of coupled quadrupole misalignments in the capture stage of the beamline
+# DNN for classification of coupled quadrupole misalignments in the PMQ stage
 
 data = pd.read_csv('DXfirst3Quads.csv')
 data.columns=['Quad', 'Q1', 'Q2', 'Q3', 'CxOTR1', 'CxOTR2', 'CxOTR3', 'CxOTR4', 'CxOTR5', 'CxOTR6']
