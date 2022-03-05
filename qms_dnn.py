@@ -10,7 +10,7 @@ from keras import callbacks
 from keras.utils.vis_utils import plot_model
 from keras import backend as K
 
-# Deep Neural Network for classification of misaligned, single components within a beamline
+# Deep Neural Network for classification of misaligned, single components for all quadrupole elements
 
 data = pd.read_csv('./data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
