@@ -12,7 +12,7 @@ from keras import backend as K
 
 # Deep Neural Network for classification of misaligned, single components within a beamline
 
-data = pd.read_csv('DxDyfirst3Quads10000.csv')
+data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0)
 data.columns=['Label','Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 
@@ -40,18 +40,17 @@ features = features.drop(['CxOTR2', 'CyOTR2', 'CxOTR4', 'CyOTR4', 'CxOTR6', 'CyO
 inputdims = len(features.columns)
 features = scaler.fit_transform(features)
 clf_target = pd.get_dummies(df['Quad'])
-print(features.min(), features.max())
-print(clf_target)
-print(reg_target)
+outputdims = len(clf_target.columns)
+
 # Split
 X_train, X_test, Yclf_train, Yclf_test, Yreg_train, Yreg_test = train_test_split(features, clf_target, reg_target, test_size=0.33, random_state = 10)
 
 # DNN model building
 inputs = tf.keras.layers.Input(shape=(inputdims,))
 hidden1 = tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(inputs)
-dropout = tf.keras.layers.Dropout(0.05)(hidden1, training=True)
-hidden2 = tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(dropout)
-clf_outputs = tf.keras.layers.Dense(units=7, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')(hidden2)
+#dropout = tf.keras.layers.Dropout(0.05)(hidden1, training=True)
+hidden2 = tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(hidden1)
+clf_outputs = tf.keras.layers.Dense(units=outputdims, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')(hidden2)
 reg_outputs = tf.keras.layers.Dense(units=1, activation='linear')(hidden2)
 dnn = tf.keras.models.Model(inputs=inputs, outputs=[clf_outputs, reg_outputs])
 
@@ -67,7 +66,7 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
 dnn.compile(loss=['categorical_crossentropy', 'mse'], metrics=[model_acc], optimizer=opt)
-history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=250, validation_split=0.33, callbacks=[stop])
+history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=500, validation_split=0.33, callbacks=[stop])
 clf_pred, reg_pred = dnn.predict(X_test)
 
 # results
@@ -94,14 +93,14 @@ plt.legend(loc="best")
 plt.show()
 
 fig, ax = plt.subplots()
-ax.scatter(Yreg_test[::20], reg_pred[::20], c='k', s=0.5, marker='x')
-ax.set(xlabel='datapoint [arb]', ylabel='misalignment [arb]')
+ax.scatter(reg_pred[::20], Yreg_test[::20], c='k', s=0.5, marker='x')
+ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
 plt.show()
 
 # confusion matrix
 xlabels = ['None', 'QM1x', 'QM1y', 'QM2x', 'QM2y', 'QM3x', 'QM3y'] 
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
-ax.set(title='Confusion Matrix for Multiclass DNN prediction', xlabel='Predicted Value', ylabel='True Value')
+ax.set(xlabel='Predicted Value', ylabel='True Value')
 plt.show()
 
 # uncertainty
