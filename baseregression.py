@@ -47,7 +47,7 @@ target = scaler.fit_transform(np.array(target).reshape(-1, 1))
 # Split
 features_train, features_test, target_train, target_test = train_test_split(features, target, test_size=0.2, random_state = 10)
 
-# Linear Regression ANN
+# Linear Regression
 LR = LinearRegression()
 LR.fit(features_train, target_train)
 

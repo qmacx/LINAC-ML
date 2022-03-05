@@ -1,9 +1,5 @@
 # LINAC-ML
 
-PMQ classification DNN: dnn.py
-PMQ regression model: regression.py
+Repository containing all relevant Machine Learning models for the misalignment detection in linear particle accelerators.
 
-Whole beamline classification and regression: beamline_dnn.py
-PMQ classification and regression: pmq_dnn.py
-Multi-element classification: dnn_multiele.py
 
