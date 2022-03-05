@@ -42,7 +42,6 @@ mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy',
 dfx['Quad'] = [mapx[i] for i in dfx['Quad']]
 dfy['Quad'] = [mapy[i] for i in dfy['Quad']]
 df = pd.concat([dfx, dfy], axis=0)
-df.to_csv('mldata.csv')
 
 # Feature selection and normalisation
 scaler = StandardScaler()
@@ -51,7 +50,6 @@ features = df.drop(['Labels', 'Quad', 'Angle'], axis=1)
 inputdims = len(features.columns)
 outputdims = len(clf_target.columns)
 features = scaler.fit_transform(features)
-clf_target.to_csv('clf_target.csv')
 
 
 # Split
@@ -98,7 +96,6 @@ cm = confusion_matrix(Yclf_test, clf_pred)
 print('Classifier Accuracy: {:.4f}%'.format(clf_acc*100))
 
 # plots
-plot_model(dnn, to_file='qms_plot.png', show_shapes=True, show_layer_names=True)
 history_df = pd.DataFrame(history.history)
 plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
 plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')

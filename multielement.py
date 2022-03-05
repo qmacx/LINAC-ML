@@ -52,8 +52,6 @@ history = dnn.fit(features_train, target_train, batch_size=32, epochs=1000, vali
 
 
 # plots
-plot_model(dnn, to_file='dnn_plot.png', show_shapes=True, show_layer_names=True)
-
 history_df = pd.DataFrame(history.history)
 plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
 plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')

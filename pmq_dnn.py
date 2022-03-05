@@ -82,7 +82,6 @@ print('Regression MAE: {:.4f}%'.format(reg_error*100))
 print('Classifier Accuracy: {:.4f}%'.format(clf_acc*100))
 
 # plots
-plot_model(dnn, to_file='pmq_plot.png', show_shapes=True, show_layer_names=True)
 history_df = pd.DataFrame(history.history)
 plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
 plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')
