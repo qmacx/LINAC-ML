@@ -15,8 +15,7 @@ from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 
 
-# Take the evolution of centroid and assign a label to that 
-# labels should be quadrupole element number
+# Baseline SVM
 
 data = pd.read_csv('PITCHfirst3Quads10000.csv')
 data = pd.read_csv('DxDyfirst3Quads10000.csv')
