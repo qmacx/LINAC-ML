@@ -10,7 +10,7 @@ from keras import callbacks
 from keras.utils.vis_utils import plot_model
 from keras import backend as K
 
-# Deep Neural Network for classification of misaligned, single components within a beamline
+# Deep Neural Network for classification of misaligned, single components over the whole beamline
 
 data = pd.read_csv('./data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
@@ -18,7 +18,6 @@ cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]
 cols.extend(OTRcols)
 data.columns=cols
-data['OTR42'][13986] = -0.00022418886038814653
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
