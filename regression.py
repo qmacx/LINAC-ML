@@ -9,29 +9,47 @@ from sklearn.preprocessing import StandardScaler
 from keras.utils.vis_utils import plot_model
 from keras import backend as K
 from keras import callbacks
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Linear regression ANN using Keras for magnitude of misalignment prediction 
 
+# Linear regression for magnitude of misalignment prediction 
 
-data = pd.read_csv('DxDyfirst3Quads10000.csv')
-data = data.drop(labels=range(30000, 39997), axis=0)
-data.columns=['Label','Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
+data = pd.read_csv('./data/data.csv')
+OTRindex = np.arange(0, len(data.columns)-3)
+cols = ['Quad', 'Labels', 'Angle']
+OTRcols = ['OTR{}'.format(x) for x in OTRindex]
+cols.extend(OTRcols)
+data.columns=cols
+data['OTR42'][13986] = -0.00022418886038814653
+
+chicaneids = np.arange(13, 32) 
+chicanecols = ['OTR{}'.format(x) for x in chicaneids]
+chicanerows = ['B1', 'B2', 'B3', 'B4']
+data = data.drop(chicanecols, axis=1)
+data = data[~data.Quad.isin(chicanerows)]
+print(data.head())
+print(data.columns)
 
 # Mapping features
-dfx = data[data['Label'] == 'Dx'] 
-dfy = data[data['Label'] == 'Dy']
-nm = data[data['Label'] == 'No_Misalign']
+dfx = data[data['Labels'] == 'DX']
+dfy = data[data['Labels'] == 'DY']
 
-mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx'}
-mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy'}
+mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx', 
+        'QM4': 'QM4_dx', 'QM5': 'QM5_dx', 'QM6': 'QM6_dx'}
+
+mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy', 
+        'QM4': 'QM4_dy', 'QM5': 'QM5_dy', 'QM6': 'QM6_dy'}
+
+print(dfy['Quad'].unique())
 
 dfx['Quad'] = [mapx[i] for i in dfx['Quad']]
 dfy['Quad'] = [mapy[i] for i in dfy['Quad']]
-df = pd.concat([dfx, dfy, nm], axis=0)
+df = pd.concat([dfx, dfy], axis=0)
+print(df.head())
 
 # Feature selection
-features = df.drop(['Label', 'Quad', 'Angle'], axis=1)
-features = features.drop(['CxOTR2','CyOTR2','CxOTR4','CyOTR4','CxOTR6','CyOTR6'], axis=1)
+features = df.drop(['Labels', 'Quad', 'Angle'], axis=1)
 quads = pd.get_dummies(df['Quad'])
 features = pd.concat([features, quads], axis=1)
 target = data['Angle']
@@ -45,45 +63,16 @@ target = scaler.fit_transform(np.array(target).reshape(-1, 1))
 features_train, features_test, target_train, target_test = train_test_split(features, target, test_size=0.2, random_state = 10)
 
 # Linear Regression ANN
-model = tf.keras.models.Sequential()
-model.add(tf.keras.layers.Dense(units=10, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu', input_dim=15))
-model.add(tf.keras.layers.Dense(units=1, kernel_initializer='normal', activation='linear'))
+LR = LinearRegression()
+LR.fit(features_train, target_train)
 
+predict = LR.predict(features_test)
+score = r2_score(target_test, predict)
+print('score: ', score)
 
-def soft_acc(y_true, y_pred):
-    '''
-    accuracy metric callback
-    '''
-    return K.mean(K.equal(K.round(y_true), K.round(y_pred)))
-
-
-# Compile, train, predict
-opt = tf.keras.optimizers.Adam(learning_rate=0.001)
-model.compile(optimizer=opt, loss='mean_squared_error', metrics=['mse', soft_acc])
-history = model.fit(features_train, target_train, epochs=20, validation_split=0.2, batch_size=100)
-predict = model.predict(features_test).flatten()
-
-# Plots
-history_df = pd.DataFrame(history.history)
-plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
-plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')
-plt.title('Training and Validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend(loc="best")
-plt.show()
-
-plt.figure()
-plt.plot(history_df.loc[:, ['soft_acc']], color='blue', label='Training accuracy')
-plt.plot(history_df.loc[:, ['val_soft_acc']], color='green', label='Validation accuracy')
-plt.title('Training and Validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-plt.show()
 
 fig, ax = plt.subplots()
-ax.scatter(target_test[::20], predict[::20], c='k', s=0.5, marker='x')
+ax.scatter(target_test[::10], predict[::10], c='k', s=0.5, marker='x')
 ax.set(xlabel='True Value [arb]', ylabel='Predicted Value [arb]', title='Linear Regression Prediction')
 plt.show()
 print(target_test, predict)
