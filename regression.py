@@ -13,7 +13,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
 
-# Linear regression for magnitude of misalignment prediction 
+# Linear regression for magnitude of misalignment prediction PMQ/EMQ
 
 data = pd.read_csv('./data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
