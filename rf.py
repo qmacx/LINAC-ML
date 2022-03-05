@@ -15,9 +15,7 @@ from keras.utils.vis_utils import plot_model
 from sklearn.ensemble import RandomForestClassifier 
 from sklearn.pipeline import make_pipeline
 
-
-# Take the evolution of centroid and assign a label to that
-# labels should be quadrupole element number
+# Baseline Random Forest Classifier
 
 data = pd.read_csv('PITCHfirst3Quads10000.csv')
 data = pd.read_csv('DxDyfirst3Quads10000.csv')
