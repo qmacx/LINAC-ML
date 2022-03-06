@@ -17,26 +17,25 @@ from sklearn.pipeline import make_pipeline
 
 # Baseline Random Forest Classifier
 
-data = pd.read_csv('PITCHfirst3Quads10000.csv')
-data = pd.read_csv('DxDyfirst3Quads10000.csv')
+data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
 data.columns=['Label', 'Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 df = data.copy()
 
+# Mapping features
+dfx = data[data['Label'] == 'Dx'] 
+dfy = data[data['Label'] == 'Dy']
+nm = data[data['Label'] == 'No_Misalign']
+print(dfx.head())
+mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx'}
+mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy'}
 
+dfx['Quad'] = [mapx[i] for i in dfx['Quad']]
+dfy['Quad'] = [mapy[i] for i in dfy['Quad']]
+df = pd.concat([dfx, dfy, nm], axis=0)
 
-QM1 = df[df['Quad'] == 'QM1']
-QM2 = df[df['Quad'] == 'QM2']
-QM3 = df[df['Quad'] == 'QM3']
-NO = df[df['Quad'] == 'No_Misalign']
-print(QM1, QM2, QM3, NO)
-
-
-df = df[df['Label'] == 'Dx']
-
-# Machine Learning
+# Feature selection 
 features = df.drop(['Label', 'Quad', 'Angle'], axis=1)
 target = df['Quad']
-
 encoder = preprocessing.LabelEncoder()
 encoder.fit(target)
 target = encoder.transform(target)
@@ -59,9 +58,14 @@ scores = cross_val_score(model, features_train, target_train, cv=10)
 print('Cross Val Score: ', scores)
 print(scores.mean())
 
+mapping = {'No_Misalign': 0, 'QM1_dx': 1, 'QM1_dy': 2, 'QM2_dx': 3, 'QM2_dy': 4, 'QM3_dx': 5, 'QM3_dy': 6}
+#target_test = [mapping[i] for i in target_test]
+#keys = mapping.keys()
+#xlabels = list(keys)
 
 cm = confusion_matrix(target_test, pred)
 ax = sns.heatmap(cm, annot=True)
+#ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
 ax.set(title='Confusion Matrix for Random Forest Classifier', xlabel='Predicted Value', ylabel='True Value')
 plt.show()
 
