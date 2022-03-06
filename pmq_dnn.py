@@ -16,9 +16,6 @@ data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0)
 data.columns=['Label','Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 
-
-
-
 # Mapping features
 dfx = data[data['Label'] == 'Dx'] 
 dfy = data[data['Label'] == 'Dy']
