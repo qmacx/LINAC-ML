@@ -21,15 +21,13 @@ cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]
 cols.extend(OTRcols)
 data.columns=cols
-data['OTR42'][13986] = -0.00022418886038814653
+data['OTR42'][13986] = -0.00022418886038814653 
 
 chicaneids = np.arange(13, 32) 
 chicanecols = ['OTR{}'.format(x) for x in chicaneids]
 chicanerows = ['B1', 'B2', 'B3', 'B4']
 data = data.drop(chicanecols, axis=1)
 data = data[~data.Quad.isin(chicanerows)]
-print(data.head())
-print(data.columns)
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
@@ -41,17 +39,14 @@ mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx',
 mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy', 
         'QM4': 'QM4_dy', 'QM5': 'QM5_dy', 'QM6': 'QM6_dy'}
 
-print(dfy['Quad'].unique())
 
 dfx['Quad'] = [mapx[i] for i in dfx['Quad']]
 dfy['Quad'] = [mapy[i] for i in dfy['Quad']]
 df = pd.concat([dfx, dfy], axis=0)
-print(df.head())
 
 # Feature selection
 features = df.drop(['Labels', 'Quad', 'Angle'], axis=1)
 quads = pd.get_dummies(df['Quad'])
-features = pd.concat([features, quads], axis=1)
 target = data['Angle']
 
 # Feature normalisation
