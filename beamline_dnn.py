@@ -18,14 +18,23 @@ cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]
 cols.extend(OTRcols)
 data.columns=cols
+data['OTR42'][13986] = -0.00022418886038814653
+
+chicaneidsx = np.arange(13, 32)[::2]
+chicanecolsx = ['OTR{}'.format(x) for x in chicaneidsx]
+chicanerowsx = ['B1', 'B2', 'B3', 'B4']
+data = data.drop(chicanecolsx, axis=1)
+print(data['Quad'].unique())
+
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
+dfx = dfx[~dfx.Quad.isin(chicanerowsx)]
 dfy = data[data['Labels'] == 'DY']
 
 mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx', 
-        'B1': 'B1_dx', 'B2': 'B2_dx', 'B3': 'B3_dx', 'B4': 'B4_dx',
         'QM4': 'QM4_dx', 'QM5': 'QM5_dx', 'QM6': 'QM6_dx'}
+#        'B1': 'B1_dx', 'B2': 'B2_dx', 'B3': 'B3_dx', 'B4': 'B4_dx',
 
 mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy', 
         'B1': 'B1_dy', 'B2': 'B2_dy', 'B3': 'B3_dy', 'B4': 'B4_dy',
@@ -82,13 +91,12 @@ clf_pred = np.argmax(clf_pred, axis=1)
 
 
 # results
-mapping = {'B1_dx': 0, 'B1_dy': 1, 'B2_dx': 2, 'B2_dy': 3, 'B3_dx': 4, 'B3_dy': 5, 'B4_dx': 6, 'B4_dy': 7,
-'QM1_dx': 8, 'QM1_dy': 9, 'QM2_dx': 10, 'QM2_dy': 11, 'QM3_dx': 12, 'QM3_dy': 13,
-'QM4_dx': 14, 'QM4_dy': 15, 'QM5_dx': 16, 'QM5_dy': 17, 'QM6_dx': 18, 'QM6_dy': 19}
+mapping = {'B1_dy': 0,  'B2_dy': 2,  'B3_dy': 3,  'B4_dy': 4,
+'QM1_dx': 5, 'QM1_dy': 6, 'QM2_dx': 7, 'QM2_dy': 8, 'QM3_dx': 9, 'QM3_dy': 10,
+'QM4_dx': 11, 'QM4_dy': 12, 'QM5_dx': 13, 'QM5_dy': 14, 'QM6_dx': 15, 'QM6_dy': 16}
 
 keys = mapping.keys()
 xlabels = list(keys)
-print(xlabels)
 Yclf_test = Yclf_test.idxmax(axis=1)
 Yclf_test = [mapping[i] for i in Yclf_test] # replaces strings with mapped value
 clf_acc = accuracy_score(Yclf_test, clf_pred)
