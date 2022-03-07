@@ -17,14 +17,23 @@ from sklearn.pipeline import make_pipeline
 
 # Baseline SVM
 
-data = pd.read_csv('PITCHfirst3Quads10000.csv')
-data = pd.read_csv('DxDyfirst3Quads10000.csv')
+data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
 data.columns=['Label', 'Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 df = data.copy()
 
-df = df[df['Label'] == 'Dx']
+# Mapping features
+dfx = data[data['Label'] == 'Dx'] 
+dfy = data[data['Label'] == 'Dy']
+nm = data[data['Label'] == 'No_Misalign']
+print(dfx.head())
+mapx = {'QM1': 'QM1_dx', 'QM2': 'QM2_dx', 'QM3': 'QM3_dx'}
+mapy = {'QM1': 'QM1_dy', 'QM2': 'QM2_dy', 'QM3': 'QM3_dy'}
 
-# Machine Learning
+dfx['Quad'] = [mapx[i] for i in dfx['Quad']]
+dfy['Quad'] = [mapy[i] for i in dfy['Quad']]
+df = pd.concat([dfx, dfy, nm], axis=0)
+
+# Feature selection
 features = df.drop(['Label', 'Quad', 'Angle'], axis=1)
 target = df['Quad']
 
