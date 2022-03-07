@@ -23,11 +23,16 @@ cols.extend(OTRcols)
 data.columns=cols
 data['OTR42'][13986] = -0.00022418886038814653 
 
-chicaneids = np.arange(13, 32) 
+chicaneids = np.arange(14, 34) 
 chicanecols = ['OTR{}'.format(x) for x in chicaneids]
 chicanerows = ['B1', 'B2', 'B3', 'B4']
 data = data.drop(chicanecols, axis=1)
 data = data[~data.Quad.isin(chicanerows)]
+
+dropids = [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13]
+dropotrs = ['OTR{}'.format(x) for x in dropids]
+data = data.drop(dropotrs, axis=1)
+
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
@@ -67,7 +72,7 @@ print('score: ', score)
 
 
 fig, ax = plt.subplots()
-ax.scatter(target_test[::10], predict[::10], c='k', s=0.5, marker='x')
-ax.set(xlabel='True Value [arb]', ylabel='Predicted Value [arb]', title='Linear Regression Prediction')
+ax.scatter(predict[::10], target_test[::10], c='k', s=0.5, marker='x')
+ax.set(xlabel='predicted value [arb]', ylabel='true value [arb]')
 plt.show()
 print(target_test, predict)
