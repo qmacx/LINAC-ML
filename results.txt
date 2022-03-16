@@ -1,0 +1,14 @@
+PMQ Regression RMSE: 3.7608
+PMQ Classifier Accuracy: 99.6428%
+QMS1 Regression RMSE: 0.1016
+QMS1 Classifier Accuracy: 99.4643%
+Beamline Regression RMSE: 0.8264
+Beamline Classifier Accuracy: 11.0611%
+QMS2 Regression RMSE: 0.1037
+QMS2 Classifier Accuracy: 99.7195%
+Final Regression RMSE:  0.07296402628714808
+Final Regression RMSE uncertainty:  0.0031655334275263246
+Final Classifier Accuracy:  99.43536280233528
+Final Classifier Uncertainty:  0.09794419387252316
+Final Classifier Probability mean:  99.32346940040588
+Final Classifier Probability std:  5.1544710993766785

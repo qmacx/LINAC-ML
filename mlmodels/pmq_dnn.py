@@ -42,8 +42,8 @@ X_train, X_test, Yclf_train, Yclf_test, Yreg_train, Yreg_test = train_test_split
 
 # DNN model building
 inputs = tf.keras.layers.Input(shape=(inputdims,))
-hidden1 = tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(inputs)
-hidden2 = tf.keras.layers.Dense(units=8, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(hidden1)
+hidden1 = tf.keras.layers.Dense(units=16, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(inputs)
+hidden2 = tf.keras.layers.Dense(units=16, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(hidden1)
 clf_outputs = tf.keras.layers.Dense(units=outputdims, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')(hidden2)
 reg_outputs = tf.keras.layers.Dense(units=1, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='linear')(hidden2)
 dnn = tf.keras.models.Model(inputs=inputs, outputs=[clf_outputs, reg_outputs])
@@ -55,7 +55,7 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 dnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=5, validation_split=0.20, callbacks=[stop], verbose=0)
+history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=500, validation_split=0.20, callbacks=[stop], verbose=0)
 
 # results
 mapping = {'No_Misalign': 0, 'QM1_dx': 1, 'QM1_dy': 2, 'QM2_dx': 3, 'QM2_dy': 4, 'QM3_dx': 5, 'QM3_dy': 6}

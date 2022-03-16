@@ -32,7 +32,6 @@ dropotrs = ['OTR{}'.format(x) for x in dropids]
 data = data.drop(chicanecols, axis=1)
 data = data[~data.Quad.isin(chicanerows)]
 data = data.drop(dropotrs, axis=1)
-data.to_csv('detectors.csv')
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
