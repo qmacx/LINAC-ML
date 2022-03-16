@@ -26,8 +26,12 @@ data['OTR42'][13986] = -0.00022418886038814653 # rogue data point in csv
 chicaneids = np.arange(14, 34)
 chicanecols = ['OTR{}'.format(x) for x in chicaneids]
 chicanerows = ['B1', 'B2', 'B3', 'B4']
+
+dropids = [0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 34, 35, 36, 37, 38, 39] # determined by detectors.py
+dropotrs = ['OTR{}'.format(x) for x in dropids]
 data = data.drop(chicanecols, axis=1)
 data = data[~data.Quad.isin(chicanerows)]
+data = data.drop(dropotrs, axis=1)
 
 # Mapping features
 dfx = data[data['Labels'] == 'DX']
@@ -74,11 +78,10 @@ stop = tf.keras.callbacks.EarlyStopping(
 opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
 dnn.compile(loss=['categorical_crossentropy', 'mse'], metrics='accuracy', optimizer=opt)
 history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=1000, validation_split=0.20, callbacks=[stop], verbose=0)
-
-# results
 clf_pred, reg_pred = dnn.predict(X_test)
 clf_pred = np.argmax(clf_pred, axis=1)
 
+# results
 mapping = {'QM1_dx': 0, 'QM1_dy': 1, 'QM2_dx': 2, 'QM2_dy': 3, 'QM3_dx': 4, 'QM3_dy': 5,
 'QM4_dx': 6, 'QM4_dy': 7, 'QM5_dx': 8, 'QM5_dy': 9, 'QM6_dx': 10, 'QM6_dy': 11}
 
@@ -86,13 +89,14 @@ keys = mapping.keys()
 xlabels = list(keys)
 Yclf_test = Yclf_test.idxmax(axis=1)
 Yclf_test = [mapping[i] for i in Yclf_test] # replaces strings with mapped value
+clf_acc = accuracy_score(Yclf_test, clf_pred)
 
-# averaging results over n=1000
-reg_acc, reg_rmse = rmse(X_test, Yreg_test, dnn, 1000)
-clf_acc, clf_std = dnn_uncertainty(X_test, Yclf_test, dnn, 1000)
+# average results over n=1000
+reg_error, reg_rmse = rmse(X_test, Yreg_test, dnn, 1000)
+clf_error, clf_std = dnn_uncertainty(X_test, Yclf_test, dnn, 1000)
 
-print('QMS1 Regression RMSE: {:.4f}'.format(reg_acc))
-print('QMS1 Classifier Accuracy: {:.4f}%'.format(clf_acc*100))
+print('QMS2 Regression RMSE: {:.4f}'.format(reg_error))
+print('QMS2 Classifier Accuracy: {:.4f}%'.format(clf_error*100))
 
 # plots
 history_df = pd.DataFrame(history.history)
@@ -101,18 +105,17 @@ plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss'
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('./plots/qms_val.png')
+plt.savefig('./plots/qmsless_val.png')
 
 # regression
 fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-plt.savefig('./plots/qms_reg.png')
+plt.savefig('./plots/qmsless_reg.png')
 
 # confusion matrix
 cm = confusion_matrix(Yclf_test, clf_pred)
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
-plt.savefig('./plots/qms_conf.png')
-
-plot_model(dnn, to_file='./plots/qms_model_plot.png', show_shapes=True, show_layer_names=True)
+plt.savefig('./plots/qmsless_conf.png')`
+plot_model(dnn, to_file='./plots/qms2_model_plot.png', show_shapes=True, show_layer_names=True)

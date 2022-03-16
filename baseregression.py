@@ -10,13 +10,14 @@ from keras.utils.vis_utils import plot_model
 from keras import backend as K
 from keras import callbacks
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, r2_score, mean_squared_error
+from uncertainty import rmse
 
 
 # Baseline Linear Regression (PMQ)
 
 
-data = pd.read_csv('DxDyfirst3Quads10000.csv')
+data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0)
 data.columns=['Label','Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 
@@ -52,8 +53,11 @@ LR = LinearRegression()
 LR.fit(features_train, target_train)
 
 predict = LR.predict(features_test)
-score = r2_score(target_test, predict)
+score = mean_squared_error(target_test, predict)
 print('score: ', score)
+
+lr_error, lr_std = rmse(features_test, target_test, LR, 100)
+print('LR RMSE: ', lr_error)
 
 
 fig, ax = plt.subplots()
