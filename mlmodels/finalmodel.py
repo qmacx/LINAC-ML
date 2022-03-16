@@ -87,7 +87,7 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
 mcdnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = mcdnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=600, validation_split=0.20, verbose=1)
+history = mcdnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=600, validation_split=0.20, verbose=0)
 
 clf_pred, reg_pred = mcdnn.predict(X_test)
 clf_pred = np.argmax(clf_pred, axis=1)
@@ -102,8 +102,10 @@ print('Final Classifier Accuracy: ', clf_acc*100)
 print('Final Classifier Uncertainty: ', clf_unc*100)
 
 clf_prob, reg_prob = probability(X_test, mcdnn, 1000)
-print(clf_prob)
-mc_pred = np.argmax(mc, axis=1)
+probs = [np.array(x).max() for x in clf_prob]
+uncertainty = np.std(probs)
+print('Final Classifier Probability mean: ', np.mean(probs)*100)
+print('Final Classifier Probability std: ', uncertainty*100)
 
 reg_dist = reg_prob[0]
 reg_preds = np.mean(reg_dist, axis=0)

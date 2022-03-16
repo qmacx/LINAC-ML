@@ -38,7 +38,7 @@ clf_target = pd.get_dummies(df['Quad'])
 outputdims = len(clf_target.columns)
 
 # Split
-X_train, X_test, Yclf_train, Yclf_test, Yreg_train, Yreg_test = train_test_split(features, clf_target, reg_target, test_size=0.33, random_state = 10)
+X_train, X_test, Yclf_train, Yclf_test, Yreg_train, Yreg_test = train_test_split(features, clf_target, reg_target, test_size=0.20, random_state = 10)
 
 # DNN model building
 inputs = tf.keras.layers.Input(shape=(inputdims,))
@@ -55,7 +55,7 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 dnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=500, validation_split=0.20, callbacks=[stop], verbose=0)
+history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=5, validation_split=0.20, callbacks=[stop], verbose=0)
 
 # results
 mapping = {'No_Misalign': 0, 'QM1_dx': 1, 'QM1_dy': 2, 'QM2_dx': 3, 'QM2_dy': 4, 'QM3_dx': 5, 'QM3_dy': 6}
