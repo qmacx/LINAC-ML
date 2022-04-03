@@ -17,7 +17,7 @@ from sklearn.pipeline import make_pipeline
 
 # Baseline Random Forest Classifier
 
-data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
+data = pd.read_csv('../data/DxDyfirst3Quads10000.csv')
 data.columns=['Label', 'Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 df = data.copy()
 
@@ -65,8 +65,8 @@ mapping = {'No_Misalign': 0, 'QM1_dx': 1, 'QM1_dy': 2, 'QM2_dx': 3, 'QM2_dy': 4,
 
 cm = confusion_matrix(target_test, pred)
 ax = sns.heatmap(cm, annot=True)
-#ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
-ax.set(title='Confusion Matrix for Random Forest Classifier', xlabel='Predicted Value', ylabel='True Value')
+ax.set(xlabel='Predicted Value', ylabel='True Value')
+plt.savefig("rf_conf.png")
 plt.show()
 
 

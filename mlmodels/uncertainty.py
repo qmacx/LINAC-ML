@@ -25,7 +25,7 @@ def dnn_uncertainty(X_test, Y_test, model, n):
 def rmse(X_test, Y_test, model, n):
     mae = []
     for _ in range(n):
-        reg_pred = model.predict(X_test)[1]  # add [1] if model output is 2 layered, remove if single output
+        reg_pred = model.predict(X_test)[1]
         mae.append(mean_squared_error(Y_test, reg_pred, squared=False))
         
     return np.mean(mae), np.std(mae)

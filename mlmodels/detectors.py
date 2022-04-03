@@ -12,7 +12,7 @@ from keras import backend as K
 
 # Deep Neural Network for classification of misaligned, single components for all quadrupole elements
 
-data = pd.read_csv('./data/data.csv')
+data = pd.read_csv('../data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
 cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]

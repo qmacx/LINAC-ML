@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import precision_score, confusion_matrix, classification_report, accuracy_score, mean_squared_error
 
-data = pd.read_csv('./data/DxDyfirst3Quads10000.csv')
+data = pd.read_csv('../data/DxDyfirst3Quads10000.csv')
 data = data.drop(labels=range(30000, 39997), axis=0) # duplicate entries
 data.columns=['Label','Quad','Angle','CxOTR1','CyOTR1','CxOTR2','CyOTR2','CxOTR3','CyOTR3','CxOTR4','CyOTR4', 'CxOTR5','CyOTR5','CxOTR6','CyOTR6','CxOTR7','CyOTR7']
 
@@ -77,16 +77,17 @@ plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss'
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('./plots/pmq_val.png')
+plt.savefig('../plots/pmq_val.png')
 
 fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-plt.savefig('./plots/pmq_reg.png')
+ax.set_ylim(-2, 2)
+plt.savefig('../plots/pmq_reg.png')
 
 # confusion matrix
 cm = confusion_matrix(Yclf_test, clf_pred)
 xlabels = ['None', 'QM1x', 'QM1y', 'QM2x', 'QM2y', 'QM3x', 'QM3y'] 
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
-plt.savefig('./plots/pmq_conf.png')
+plt.savefig('../plots/pmq_conf.png')

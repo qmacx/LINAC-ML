@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns 
 import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
 from sklearn.metrics import precision_score, confusion_matrix, classification_report, accuracy_score, mean_squared_error
 from keras import callbacks
@@ -14,7 +14,7 @@ from uncertainty import probability, rmse, dnn_uncertainty
 
 # Deep Neural Network for classification of misaligned, single components for all quadrupole elements
 
-data = pd.read_csv('./data/data.csv')
+data = pd.read_csv('../data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
 cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]
@@ -81,12 +81,12 @@ mcdnn = tf.keras.models.Model(inputs=inputs, outputs=[clf_outputs, reg_outputs])
 
 # compile, train, predict
 stop = tf.keras.callbacks.EarlyStopping(
-    monitor='val_dense_4_loss', min_delta=0.0001, patience=20, verbose=0,
+    monitor='val_dense_4_loss', min_delta=0.00001, patience=20, verbose=0,
     mode='auto', baseline=None, restore_best_weights=True)
 
-opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
+opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
 mcdnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = mcdnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=600, validation_split=0.20, verbose=0)
+history = mcdnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=1000, validation_split=0.20, verbose=1)
 
 clf_pred, reg_pred = mcdnn.predict(X_test)
 clf_pred = np.argmax(clf_pred, axis=1)
@@ -100,12 +100,12 @@ clf_acc, clf_unc = dnn_uncertainty(X_test, Yclf_test, mcdnn, 1000)
 print('Final Classifier Accuracy: ', clf_acc*100)
 print('Final Classifier Uncertainty: ', clf_unc*100)
 
-clf_prob, reg_prob = probability(X_test, mcdnn, 1000)
-probs = [np.array(x).max() for x in clf_prob]
-uncertainty = np.std(probs)
-print('Final Classifier Probability mean: ', np.mean(probs)*100)
-print('Final Classifier Probability std: ', uncertainty*100)
 
+clf_prob, reg_prob = probability(X_test, mcdnn, 1000)
+reg_dist = reg_prob[0]
+reg_preds = np.mean(reg_dist, axis=0)
+
+plt.figure()
 reg_dist = reg_prob[0]
 reg_preds = np.mean(reg_dist, axis=0)
 sns.kdeplot(reg_dist, shade=True, label='Ensemble Distribution')
@@ -113,27 +113,29 @@ plt.axvline(reg_preds, color='red', label='Ensemble Average')
 plt.axvline(Yreg_test[0], color='purple', label='True value')
 plt.xlabel('Misalignment [arb.]')
 plt.ylabel('')
-plt.savefig('./plots/regression_uncertainty.png')
+plt.savefig('../plots/regression_uncertainty.png')
 plt.legend()
 
 # plots
+plt.figure()
 history_df = pd.DataFrame(history.history)
 plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
 plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('./plots/final_val.png')
+plt.savefig('../plots/final_val.png')
 
 # regression
 fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-plt.savefig('./plots/final_reg.png')
+plt.savefig('../plots/final_reg.png')
 
 # confusion matrix
+plt.figure()
 cm = confusion_matrix(Yclf_test, clf_pred)
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
-ax.set(title='Confusion Matrix for Multiclass DNN prediction', xlabel='Predicted Value', ylabel='True Value')
-plt.savefig('./plots/final_conf.png')
-plot_model(mcdnn, to_file='./plots/final_model.png', show_shapes=True, show_layer_names=True)
+ax.set(xlabel='Predicted Value', ylabel='True Value')
+plt.savefig('../plots/final_conf.png')
+plot_model(mcdnn, to_file='../plots/final_model.png', show_shapes=True, show_layer_names=True)

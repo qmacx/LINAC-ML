@@ -14,7 +14,7 @@ from sklearn.metrics import precision_score, confusion_matrix, classification_re
 
 # Deep Neural Network for classification of misaligned, single components for all quadrupole elements
 
-data = pd.read_csv('./data/data.csv')
+data = pd.read_csv('../data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
 cols = ['Quad', 'Labels', 'Angle']
 OTRcols = ['OTR{}'.format(x) for x in OTRindex]
@@ -105,17 +105,18 @@ plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss'
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('./plots/qmsless_val.png')
+plt.savefig('../plots/qmsless_val.png')
 
 # regression
 fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-plt.savefig('./plots/qmsless_reg.png')
+plt.savefig('../plots/qmsless_reg.png')
 
 # confusion matrix
 cm = confusion_matrix(Yclf_test, clf_pred)
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
-plt.savefig('./plots/qmsless_conf.png')
-plot_model(dnn, to_file='./plots/qms2_model_plot.png', show_shapes=True, show_layer_names=True)
+ax.tick_params(labelrotation=45)
+plt.savefig('../plots/qmsless_conf.png')
+plot_model(dnn, to_file='../plots/qms2_model_plot.png', show_shapes=True, show_layer_names=True)
