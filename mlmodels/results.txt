@@ -1,0 +1,6 @@
+Final Classifier Accuracy:  99.83319432860716
+6
+Final Regression RMSE:  0.009138875597938925
+Final Classifier Uncertainty:  0.06929755617860087
+6
+Final Regression RMSE uncertainty:  0.0009529776684385922
