@@ -71,7 +71,7 @@ print(inputdims)
 # MCDNN model building
 inputs = tf.keras.layers.Input(shape=(inputdims,))
 hidden1 = tf.keras.layers.Dense(units=inputdims * 16, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(inputs, training=True)
-dropout1 = tf.keras.layers.Dropout(0.02)(hidden1, training=True)
+dropout1 = tf.keras.layers.Dropout(0.0)(hidden1, training=True)
 hidden2 = tf.keras.layers.Dense(units=inputdims * 16, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(dropout1, training=True)
 hidden3 = tf.keras.layers.Dense(units=inputdims * 16, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(hidden2, training=True)
 reg_outputs = tf.keras.layers.Dense(units=1, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='linear')(hidden3, training=True)
@@ -84,13 +84,12 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
 mcdnn.compile(loss='mse', optimizer=opt)
-history = mcdnn.fit(X_train, Yreg_train, batch_size=100, epochs=500, validation_split=0.20, verbose=1)
+history = mcdnn.fit(X_train, Yreg_train, batch_size=100, epochs=500, validation_split=0.20, verbose=0)
 reg_pred = mcdnn.predict(X_test)
 
 # uncertainty
 reg_acc, reg_rmse = rmse(X_test, Yreg_test, mcdnn, 1000)
 print('Final Regression RMSE: ', reg_acc)
-print('Final Regression RMSE uncertainty: ', reg_rmse)
 
 reg_prob = probability(X_test, mcdnn, 1000)
 
@@ -112,7 +111,7 @@ plt.axvline(Yreg_test[0], color='purple', label='True value')
 plt.xlabel('Misalignment [arb.]')
 plt.ylabel('')
 plt.legend()
-plt.savefig('../plots/regression_uncertainty.png')
+plt.savefig('../plots/regression_nouncertainty.png')
 
 # regression
 fig, ax = plt.subplots()
