@@ -10,7 +10,7 @@ from keras import callbacks
 from keras.utils.vis_utils import plot_model
 from keras import backend as K
 
-# Deep Neural Network for classification of misaligned, single components for all quadrupole elements
+# File used for checking which OTR screens were relevant and should be kept
 
 data = pd.read_csv('../data/data.csv')
 OTRindex = np.arange(0, len(data.columns)-3)
