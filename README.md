@@ -12,7 +12,7 @@ Repository containing all relevant codes for the misalignment detection in linea
  - contains the raw data files provided by Craig Edwards who produced the data as part of his thesis
 
 ## simulations
- - contains functions which can be used to simulate the transport line across a parameter grid to create a dataset, this later became obsolete once the data had been provided
+ - contains functions which can be used to simulate the transport line across a parameter grid to create a dataset, this later became obsolete once the data had been provided but is included for potential future use
 
 ## plots
  - contains the relevant plots for production of the final report
