@@ -14,7 +14,7 @@ def probability(X_test, model, n):
 def dnn_uncertainty(X_test, Y_test, model, n):
     acc = []
     for _ in range(n):
-        pred = model.predict(X_test)[0]
+        pred = model.predict(X_test)
         pred = np.argmax(pred, axis=1)
         acc.append(accuracy_score(Y_test, pred))
     
@@ -24,7 +24,7 @@ def dnn_uncertainty(X_test, Y_test, model, n):
 def rmse(X_test, Y_test, model, n):
     mae = []
     for _ in range(n):
-        reg_pred = model.predict(X_test)[1]
+        reg_pred = model.predict(X_test)
         mae.append(mean_squared_error(Y_test, reg_pred, squared=False))
         
     return np.mean(mae), np.std(mae)
