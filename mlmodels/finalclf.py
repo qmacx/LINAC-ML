@@ -71,9 +71,9 @@ Yclf_test = [mapping[i] for i in Yclf_test] # replaces strings with mapped value
 # MCDNN model building
 inputs = tf.keras.layers.Input(shape=(inputdims,))
 hidden1 = tf.keras.layers.Dense(units=96, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(inputs, training=True)
-dropout1 = tf.keras.layers.Dropout(0.1)(hidden1, training=True)
+dropout1 = tf.keras.layers.Dropout(0.0)(hidden1, training=True)
 hidden2 = tf.keras.layers.Dense(units=96, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(dropout1)
-dropout2 = tf.keras.layers.Dropout(0.1)(hidden2, training=True)
+dropout2 = tf.keras.layers.Dropout(0.0)(hidden2, training=True)
 hidden3 = tf.keras.layers.Dense(units=96, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(dropout2)
 clf_outputs = tf.keras.layers.Dense(units=outputdims, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')(hidden3, training=True)
 mcdnn = tf.keras.models.Model(inputs=inputs, outputs=clf_outputs)
@@ -85,20 +85,14 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
 mcdnn.compile(loss='categorical_crossentropy', optimizer=opt)
-history = mcdnn.fit(X_train, Yclf_train, batch_size=100, epochs=1500, validation_split=0.20, verbose=1)
+history = mcdnn.fit(X_train, Yclf_train, batch_size=100, epochs=1500, validation_split=0.20, verbose=0)
 
 clf_pred = mcdnn.predict(X_test)
 clf_pred = np.argmax(clf_pred, axis=1)
 
 # uncertainty
-
 clf_acc, clf_unc = dnn_uncertainty(X_test, Yclf_test, mcdnn, 1000)
 print('Final Classifier Accuracy: ', clf_acc*100)
-print('Final Classifier Uncertainty: ', clf_unc*100)
-
-
-clf_prob = probability(X_test, mcdnn, 1000)
-
 
 # plots
 plt.figure()
@@ -108,7 +102,7 @@ plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss'
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('../plots/unc_clf_val.png')
+plt.savefig('../plots/clf_val.png')
 
 # confusion matrix
 plt.figure()
@@ -116,5 +110,5 @@ cm = confusion_matrix(Yclf_test, clf_pred)
 ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=False)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
 ax.tick_params(labelrotation=45)
-plt.savefig('../plots/unc_conf.png')
-plot_model(mcdnn, to_file='../plots/unc_clf_model.png', show_shapes=True, show_layer_names=True)
+plt.savefig('../plots/clf_conf.png')
+plot_model(mcdnn, to_file='../plots/clf_model.png', show_shapes=True, show_layer_names=True)
