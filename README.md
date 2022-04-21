@@ -3,7 +3,7 @@
 Repository containing all relevant codes for the misalignment detection in linear particle accelerators.
 
 ## mlmodels 
- - contains the final Machine Learning models configuration and training file, i.e finalclf.py and finalregression.py
+ - contains the final Machine Learning model configuration and training files, i.e finalclf.py and finalregression.py
  - contains the models and functions used to compute uncertainty, i.e uncertainty.py, clfuncertainty.py and regressionuncertainty.py
  - archived_models contains the historic models used as part of the development process but which are now obsolete
  - the bash script get_results.sh runs the relevant models to produce final results which are stored in results.txt
