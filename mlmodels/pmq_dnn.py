@@ -55,7 +55,7 @@ stop = tf.keras.callbacks.EarlyStopping(
 
 opt = tf.keras.optimizers.Adam(learning_rate=0.001)
 dnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=500, validation_split=0.20, callbacks=[stop], verbose=0)
+history = dnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=32, epochs=50, validation_split=0.20, callbacks=[stop], verbose=0)
 
 # results
 mapping = {'No_Misalign': 0, 'QM1_dx': 1, 'QM1_dy': 2, 'QM2_dx': 3, 'QM2_dy': 4, 'QM3_dx': 5, 'QM3_dy': 6}
@@ -82,7 +82,7 @@ plt.savefig('../plots/pmq_val.png')
 fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-ax.set_ylim(-2, 2)
+ax.set_ylim(-1.8, 1.8)
 plt.savefig('../plots/pmq_reg.png')
 
 # confusion matrix

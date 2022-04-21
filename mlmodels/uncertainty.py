@@ -3,13 +3,12 @@ from sklearn.metrics import mean_squared_error, accuracy_score
 
 
 def probability(X_test, model, n):
-    clf_preds, reg_preds = [], []
+    reg_preds = []
     for _ in range(n):
-        clf_pred, reg_pred = model(X_test)
-        clf_preds.append(clf_pred)
+        reg_pred = model(X_test)
         reg_preds.append(reg_pred)
 
-    return np.stack(clf_preds).mean(axis=0), np.hstack(reg_preds)
+    return np.hstack(reg_preds)
 
 
 def dnn_uncertainty(X_test, Y_test, model, n):

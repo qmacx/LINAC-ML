@@ -76,8 +76,7 @@ hidden2 = tf.keras.layers.Dense(units=96, kernel_initializer=tf.keras.initialize
 dropout2 = tf.keras.layers.Dropout(0.1)(hidden2, training=True)
 hidden3 = tf.keras.layers.Dense(units=96, kernel_initializer=tf.keras.initializers.HeNormal(), activation='relu')(dropout2)
 clf_outputs = tf.keras.layers.Dense(units=outputdims, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='softmax')(hidden3, training=True)
-reg_outputs = tf.keras.layers.Dense(units=1, kernel_initializer=tf.keras.initializers.glorot_normal(), activation='linear')(hidden3, training=True)
-mcdnn = tf.keras.models.Model(inputs=inputs, outputs=[clf_outputs, reg_outputs])
+mcdnn = tf.keras.models.Model(inputs=inputs, outputs=clf_outputs)
 
 # compile, train, predict
 stop = tf.keras.callbacks.EarlyStopping(
@@ -85,36 +84,21 @@ stop = tf.keras.callbacks.EarlyStopping(
     mode='auto', baseline=None, restore_best_weights=True)
 
 opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
-mcdnn.compile(loss=['categorical_crossentropy', 'mse'], optimizer=opt)
-history = mcdnn.fit(X_train, [Yclf_train, Yreg_train], batch_size=100, epochs=1000, validation_split=0.20, verbose=1)
+mcdnn.compile(loss='categorical_crossentropy', optimizer=opt)
+history = mcdnn.fit(X_train, Yclf_train, batch_size=100, epochs=1500, validation_split=0.20, verbose=1)
 
-clf_pred, reg_pred = mcdnn.predict(X_test)
+clf_pred = mcdnn.predict(X_test)
 clf_pred = np.argmax(clf_pred, axis=1)
 
 # uncertainty
-reg_acc, reg_rmse = rmse(X_test, Yreg_test, mcdnn, 1000)
-print('Final Regression RMSE: ', reg_acc)
-print('Final Regression RMSE uncertainty: ', reg_rmse)
 
 clf_acc, clf_unc = dnn_uncertainty(X_test, Yclf_test, mcdnn, 1000)
 print('Final Classifier Accuracy: ', clf_acc*100)
 print('Final Classifier Uncertainty: ', clf_unc*100)
 
 
-clf_prob, reg_prob = probability(X_test, mcdnn, 1000)
-reg_dist = reg_prob[0]
-reg_preds = np.mean(reg_dist, axis=0)
+clf_prob = probability(X_test, mcdnn, 1000)
 
-plt.figure()
-reg_dist = reg_prob[0]
-reg_preds = np.mean(reg_dist, axis=0)
-sns.kdeplot(reg_dist, shade=True, label='Ensemble Distribution')
-plt.axvline(reg_preds, color='red', label='Ensemble Average')
-plt.axvline(Yreg_test[0], color='purple', label='True value')
-plt.xlabel('Misalignment [arb.]')
-plt.ylabel('')
-plt.savefig('../plots/regression_uncertainty.png')
-plt.legend()
 
 # plots
 plt.figure()
@@ -124,18 +108,13 @@ plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss'
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend(loc="best")
-plt.savefig('../plots/final_val.png')
-
-# regression
-fig, ax = plt.subplots()
-ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
-ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
-plt.savefig('../plots/final_reg.png')
+plt.savefig('../plots/unc_clf_val.png')
 
 # confusion matrix
 plt.figure()
 cm = confusion_matrix(Yclf_test, clf_pred)
-ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
+ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=False)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
-plt.savefig('../plots/final_conf.png')
-plot_model(mcdnn, to_file='../plots/final_model.png', show_shapes=True, show_layer_names=True)
+ax.tick_params(labelrotation=45)
+plt.savefig('../plots/unc_conf.png')
+plot_model(mcdnn, to_file='../plots/unc_clf_model.png', show_shapes=True, show_layer_names=True)

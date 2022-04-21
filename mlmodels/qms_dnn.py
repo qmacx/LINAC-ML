@@ -95,7 +95,8 @@ print('QMS1 Regression RMSE: {:.4f}'.format(reg_acc))
 print('QMS1 Classifier Accuracy: {:.4f}%'.format(clf_acc*100))
 
 # plots
-history_df = pd.DataFrame(history.history)
+'''history_df = pd.DataFrame(history.history)
+plt.figure()
 plt.plot(history_df.loc[:, ['loss']], color='blue', label='Training loss')
 plt.plot(history_df.loc[:, ['val_loss']], color='green', label='Validation loss')
 plt.xlabel('Epochs')
@@ -108,12 +109,12 @@ fig, ax = plt.subplots()
 ax.scatter(reg_pred, Yreg_test, c='k', s=0.5, marker='x')
 ax.set(xlabel='predicted value[arb]', ylabel='true value [arb]')
 plt.savefig('../plots/qms_reg.png')
-
+'''
 # confusion matrix
 cm = confusion_matrix(Yclf_test, clf_pred)
-ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=True)
+ax = sns.heatmap(cm, xticklabels=xlabels, yticklabels=xlabels, annot=False)
 ax.set(xlabel='Predicted Value', ylabel='True Value')
 ax.tick_params(labelrotation=45)
-plt.savefig('../plots/qms_conf.png')
+plt.savefig('../plots/qms_conf2.png')
 
 plot_model(dnn, to_file='../plots/qms_model_plot.png', show_shapes=True, show_layer_names=True)
